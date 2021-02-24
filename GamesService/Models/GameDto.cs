@@ -12,6 +12,6 @@ namespace GamesService.Models
         public DateTime Date { get; set; }
         public string Teams { get; set; }
         public string Division { get; set; }
-        public string Postion { get; set; }
+        public string Position { get; set; }
     }
 }
