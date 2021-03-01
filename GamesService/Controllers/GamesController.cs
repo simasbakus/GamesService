@@ -17,13 +17,11 @@ namespace GamesService.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IMongoRepository _repository;
-        private readonly IUserAuthentication _authenticaton;
         private readonly IMapper _mapper;
 
-        public GamesController(IMongoRepository repository, IUserAuthentication authentication, IMapper mapper)
+        public GamesController(IMongoRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _authenticaton = authentication;
             _mapper = mapper;
         }
 
@@ -84,20 +82,6 @@ namespace GamesService.Controllers
             {
                 return StatusCode(500, "Something went wrong");
             }
-        }
-
-        [AllowAnonymous]
-        [HttpPost("Authenticate")]
-        public IActionResult Authenticate([FromBody]UserCred userCred)
-        {
-            /* AUTHENTICATES USER BY THE CREDENTIALS */
-
-            string token = _authenticaton.Authenticate(userCred);
-
-            if (token == null)
-                return Unauthorized();
-
-            return Ok(token);
         }
 
         private static List<string> ConvertStrToList(string divisions)
