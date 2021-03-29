@@ -27,6 +27,12 @@ namespace GamesService.Controllers
             return Ok("User authenticated");
         }
 
+        [HttpGet("Test")]
+        public IActionResult PingTest()
+        {
+            return Ok("Ping Test Successful!");
+        }
+
         [HttpPost]
         public IActionResult Authenticate([FromBody] UserCred userCred)
         {
