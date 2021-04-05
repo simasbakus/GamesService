@@ -25,12 +25,11 @@ namespace GamesService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
+        [HttpGet("CurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
         {
-            // Check if requested user id matches the user id in the token
-            if (id != User.Claims.FirstOrDefault(c => c.Type == "Id").Value)
-                return Unauthorized();
+            // Get currently authorized user id from claim
+            string id = User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
 
             try
             {
