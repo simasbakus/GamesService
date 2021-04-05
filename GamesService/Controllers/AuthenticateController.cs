@@ -34,11 +34,11 @@ namespace GamesService.Controllers
         }
 
         [HttpPost]
-        public IActionResult Authenticate([FromBody] UserCred userCred)
+        public async Task<IActionResult> Authenticate([FromBody] UserCred userCred)
         {
             /* AUTHENTICATES USER BY THE CREDENTIALS */
 
-            string token = _authentication.Authenticate(userCred);
+            string token = await _authentication.Authenticate(userCred);
 
             if (token == null)
                 return Unauthorized();

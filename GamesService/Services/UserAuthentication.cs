@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace GamesService.Services
 {
@@ -21,7 +22,7 @@ namespace GamesService.Services
             _repository = repository;
         }
 
-        public string Authenticate(UserCred userCred)
+        public async Task<string> Authenticate(UserCred userCred)
         {
             User foundUser;
 
@@ -30,7 +31,7 @@ namespace GamesService.Services
 
             try
             {
-                foundUser = _repository.GetUserByUsername(username);
+                foundUser = await _repository.GetUserByUsername(username);
             }
             catch (Exception)
             {

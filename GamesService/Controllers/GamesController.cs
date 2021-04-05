@@ -37,7 +37,7 @@ namespace GamesService.Controllers
             {
                 List<Game> results = await _repository.GetAllGamesAsync(userId, ConvertStrToList(Divisions));
 
-                List<string> userInfo = _repository.GetUserInfo(userId);
+                List<string> userInfo = await _repository.GetUserInfo(userId);
 
                 List<GameDto> games = _mapper.Map<List<GameDto>>(results, opt =>
                 {
@@ -67,7 +67,7 @@ namespace GamesService.Controllers
             {
                 List<Game> results = await _repository.GetGamesByMonthAsync(userId, date, ConvertStrToList(Divisions));
 
-                List<string> userInfo = _repository.GetUserInfo(userId);
+                List<string> userInfo = await _repository.GetUserInfo(userId);
 
                 List<GameDto> games = _mapper.Map<List<GameDto>>(results, opt =>
                 {

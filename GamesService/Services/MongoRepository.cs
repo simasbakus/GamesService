@@ -26,16 +26,16 @@ namespace GamesService.Services
         }
 
         #region ------------- Users ---------------------
-        public User GetUserByUsername(string username)
+        public Task<User> GetUserByUsername(string username)
         {
             FilterDefinition<User> userFilter = Builders<User>.Filter.Eq(u => u.Username, username);
 
-            return RunUsersQuery(userFilter);
+            return RunUsersQueryAsync(userFilter);
         }
 
-        public List<string> GetUserInfo(string id)
+        public async Task<List<string>> GetUserInfo(string id)
         {
-            User user = GetUserById(id);
+            User user = await GetUserById(id);
 
             List<string> userInfo = new List<string>()
             {
@@ -47,36 +47,36 @@ namespace GamesService.Services
             return userInfo;
         }
 
-        private User GetUserById(string id)
+        public Task<User> GetUserById(string id)
         {
             FilterDefinition<User> userFilter = Builders<User>.Filter.Eq(u => u.Id, new BsonObjectId(new ObjectId(id)));
 
-            return RunUsersQuery(userFilter);
+            return RunUsersQueryAsync(userFilter);
         }
 
-        private User RunUsersQuery(FilterDefinition<User> userFilter)
+        private Task<User> RunUsersQueryAsync(FilterDefinition<User> userFilter)
         {
             return _usersCollection
                     .Find(userFilter)
-                    .First();
+                    .FirstAsync();
         }
         #endregion --------------------------------------
 
 
         #region ------------- Games ---------------------
-        public Task<List<Game>> GetAllGamesAsync(string userId, List<string> divisions)
+        public async Task<List<Game>> GetAllGamesAsync(string userId, List<string> divisions)
         {
-            User user = GetUserById(userId);
+            User user = await GetUserById(userId);
 
             FilterDefinition<Game> refFilter = SetRefFilter(user);
             FilterDefinition<Game> divisionFilter = CreateDivisionsFilter(divisions);
 
-            return RunGamesQueryAsync(refFilter, _emptyFilter, divisionFilter);
+            return await RunGamesQueryAsync(refFilter, _emptyFilter, divisionFilter);
         }
 
-        public Task<List<Game>> GetGamesByMonthAsync(string userId, string dateStr, List<string> divisions)
+        public async Task<List<Game>> GetGamesByMonthAsync(string userId, string dateStr, List<string> divisions)
         {
-            User user = GetUserById(userId);
+            User user = await GetUserById(userId);
 
             FilterDefinition<Game> refFilter = SetRefFilter(user);
 
@@ -86,7 +86,7 @@ namespace GamesService.Services
 
             FilterDefinition<Game> divisionFilter = CreateDivisionsFilter(divisions);
 
-            return RunGamesQueryAsync(refFilter, monthFilter, divisionFilter);
+            return await RunGamesQueryAsync(refFilter, monthFilter, divisionFilter);
         }
 
         private Task<List<Game>> RunGamesQueryAsync(FilterDefinition<Game> refFilter, FilterDefinition<Game> monthFilter, FilterDefinition<Game> divisionFilter)
