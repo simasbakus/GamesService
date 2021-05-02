@@ -14,5 +14,6 @@ namespace GamesService.Entities
         public string Name { get; set; }
         public string LName { get; set; }
         public string NameInitial { get; set; }
+        public string Role { get; set; }
     }
 }

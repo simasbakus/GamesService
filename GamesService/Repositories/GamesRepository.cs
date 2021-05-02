@@ -7,77 +7,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GamesService.Services
+namespace GamesService.Repositories
 {
-    public class MongoRepository : IMongoRepository
+    public class GamesRepository : IGamesRepository
     {
         private readonly IMongoCollection<Game> _gamesCollection;
-        private readonly IMongoCollection<User> _usersCollection;
         private readonly FilterDefinition<Game> _emptyFilter = Builders<Game>.Filter.Empty;
 
-        public MongoRepository(IConfiguration configuration)
+        public GamesRepository(IConfiguration configuration)
         {
             /* Connection to the Mongo Database */
 
-            MongoClient client = new MongoClient(configuration.GetConnectionString("MongoClient"));
+            MongoClient client = new(configuration.GetConnectionString("MongoClient"));
             IMongoDatabase db = client.GetDatabase(configuration["MongoDB"]);
             _gamesCollection = db.GetCollection<Game>(configuration["MongoGamesCollection"]);
-            _usersCollection = db.GetCollection<User>(configuration["MongoUsersCollection"]);
         }
 
-        #region ------------- Users ---------------------
-        public Task<User> GetUserByUsername(string username)
+        public async Task<List<Game>> GetAllGamesAsync(User user, List<string> divisions)
         {
-            FilterDefinition<User> userFilter = Builders<User>.Filter.Eq(u => u.Username, username);
-
-            return RunUsersQueryAsync(userFilter);
-        }
-
-        public async Task<List<string>> GetUserInfo(string id)
-        {
-            User user = await GetUserById(id);
-
-            List<string> userInfo = new List<string>()
-            {
-                user.Name,
-                user.LName,
-                user.NameInitial
-            };
-
-            return userInfo;
-        }
-
-        public Task<User> GetUserById(string id)
-        {
-            FilterDefinition<User> userFilter = Builders<User>.Filter.Eq(u => u.Id, new BsonObjectId(new ObjectId(id)));
-
-            return RunUsersQueryAsync(userFilter);
-        }
-
-        private Task<User> RunUsersQueryAsync(FilterDefinition<User> userFilter)
-        {
-            return _usersCollection
-                    .Find(userFilter)
-                    .FirstAsync();
-        }
-        #endregion --------------------------------------
-
-
-        #region ------------- Games ---------------------
-        public async Task<List<Game>> GetAllGamesAsync(string userId, List<string> divisions)
-        {
-            User user = await GetUserById(userId);
-
             FilterDefinition<Game> refFilter = SetRefFilter(user);
             FilterDefinition<Game> divisionFilter = CreateDivisionsFilter(divisions);
 
             return await RunGamesQueryAsync(refFilter, _emptyFilter, divisionFilter);
         }
 
-        public async Task<List<Game>> GetGamesByMonthAsync(string userId, string dateStr, List<string> divisions)
+        public async Task<List<Game>> GetGamesByMonthAsync(User user, string dateStr, List<string> divisions)
         {
-            User user = await GetUserById(userId);
-
             FilterDefinition<Game> refFilter = SetRefFilter(user);
 
             DateTime date = DateTime.ParseExact(dateStr, "yyyy-MM", null);
@@ -96,10 +51,7 @@ namespace GamesService.Services
                     .Sort("{ Date: -1 }")
                     .ToListAsync();
         }
-        #endregion -------------------------------------
 
-
-        #region ---------------- Filter Builders ---------------------
         private static FilterDefinition<Game> SetRefFilter(User user)
         {
             return Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.LName)) & (Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.NameInitial)))
@@ -124,7 +76,5 @@ namespace GamesService.Services
             }
             return divisionFilter;
         }
-
-        #endregion --------------------------------------------------
     }
 }

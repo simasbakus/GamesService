@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using GamesService.Entities;
 using GamesService.Models;
-using GamesService.Services;
+using GamesService.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,17 +11,20 @@ using System.Threading.Tasks;
 
 namespace GamesService.Controllers
 {
+    [ApiVersion("1.0")]
     [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class GamesController : ControllerBase
     {
-        private readonly IMongoRepository _repository;
+        private readonly IUsersRepository _usersRepository;
+        private readonly IGamesRepository _gamesRepository;
         private readonly IMapper _mapper;
 
-        public GamesController(IMongoRepository repository, IMapper mapper)
+        public GamesController(IUsersRepository usersRepository, IGamesRepository gamesRepository, IMapper mapper)
         {
-            _repository = repository;
+            _usersRepository = usersRepository;
+            _gamesRepository = gamesRepository;
             _mapper = mapper;
         }
 
@@ -35,15 +38,15 @@ namespace GamesService.Controllers
 
             try
             {
-                List<Game> results = await _repository.GetAllGamesAsync(userId, ConvertStrToList(Divisions));
+                User user = await _usersRepository.GetUserById(userId);
 
-                List<string> userInfo = await _repository.GetUserInfo(userId);
+                List<Game> results = await _gamesRepository.GetAllGamesAsync(user, ConvertStrToList(Divisions));
 
                 List<GameDto> games = _mapper.Map<List<GameDto>>(results, opt =>
                 {
-                    opt.Items["Name"] = userInfo[0];
-                    opt.Items["Lname"] = userInfo[1];
-                    opt.Items["NameInit"] = userInfo[2];
+                    opt.Items["Name"] = user.Name;
+                    opt.Items["Lname"] = user.LName;
+                    opt.Items["NameInit"] = user.NameInitial;
                 });
 
                 return Ok(games);
@@ -65,15 +68,15 @@ namespace GamesService.Controllers
 
             try
             {
-                List<Game> results = await _repository.GetGamesByMonthAsync(userId, date, ConvertStrToList(Divisions));
+                User user = await _usersRepository.GetUserById(userId);
 
-                List<string> userInfo = await _repository.GetUserInfo(userId);
+                List<Game> results = await _gamesRepository.GetGamesByMonthAsync(user, date, ConvertStrToList(Divisions));
 
                 List<GameDto> games = _mapper.Map<List<GameDto>>(results, opt =>
                 {
-                    opt.Items["Name"] = userInfo[0];
-                    opt.Items["Lname"] = userInfo[1];
-                    opt.Items["NameInit"] = userInfo[2];
+                    opt.Items["Name"] = user.Name;
+                    opt.Items["Lname"] = user.LName;
+                    opt.Items["NameInit"] = user.NameInitial;
                 });
 
                 return Ok(games);

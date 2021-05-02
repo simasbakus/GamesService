@@ -1,10 +1,12 @@
 
+using GamesService.Repositories;
 using GamesService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +36,14 @@ namespace GamesService
         {
 
             services.AddControllers();
+            services.AddApiVersioning(option => 
+            {
+                option.AssumeDefaultVersionWhenUnspecified = true;
+                option.DefaultApiVersion = new ApiVersion(1, 0);
+                option.ReportApiVersions = true;
+                option.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "GamesService", Version = "v1" });
@@ -56,8 +66,13 @@ namespace GamesService
                 };
             });
 
-            services.AddScoped<IMongoRepository, MongoRepository>();
-            services.AddScoped<IUserAuthentication, UserAuthentication>();
+            services.AddAuthorization();
+
+            services.AddSingleton<IUsersRepository, UsersRepository>();
+            services.AddSingleton<IGamesRepository, GamesRepository>();
+            
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICryptographyService, CryptographyService>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
