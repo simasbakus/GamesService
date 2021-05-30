@@ -13,6 +13,7 @@ namespace GamesService.Entities
         public string Password { get; set; }
         public string Name { get; set; }
         public string LName { get; set; }
+        public string LNamePattern { get; set; }
         public string NameInitial { get; set; }
         public string Role { get; set; }
     }
