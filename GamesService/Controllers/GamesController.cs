@@ -75,7 +75,7 @@ namespace GamesService.Controllers
                 List<GameDto> games = _mapper.Map<List<GameDto>>(results, opt =>
                 {
                     opt.Items["Name"] = user.Name;
-                    opt.Items["Lname"] = user.LName;
+                    opt.Items["LNamePattern"] = user.LNamePattern;
                     opt.Items["NameInit"] = user.NameInitial;
                 });
 
