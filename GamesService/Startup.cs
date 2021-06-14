@@ -70,6 +70,7 @@ namespace GamesService
 
             services.AddSingleton<IUsersRepository, UsersRepository>();
             services.AddSingleton<IGamesRepository, GamesRepository>();
+            services.AddSingleton<IDivisionsRepository, DivisionsRepository>();
             
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICryptographyService, CryptographyService>();
