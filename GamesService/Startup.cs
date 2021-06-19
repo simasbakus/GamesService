@@ -55,14 +55,16 @@ namespace GamesService
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(x => 
             {
-                x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                x.TokenValidationParameters = new()
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["SecretKey"])),
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -71,6 +73,7 @@ namespace GamesService
             services.AddSingleton<IUsersRepository, UsersRepository>();
             services.AddSingleton<IGamesRepository, GamesRepository>();
             services.AddSingleton<IDivisionsRepository, DivisionsRepository>();
+            services.AddSingleton<IRefreshTokensRepository, RefreshTokensRepository>();
             
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICryptographyService, CryptographyService>();

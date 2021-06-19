@@ -34,7 +34,7 @@ namespace GamesService.Controllers
             /* GETS ALL GAMES FOR THE AUTHENTICATED USER, OPTIONAL DIVISIONS FOR FILTERING */
              
             //Gets user Id from token claim
-            string userId = User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
 
             try
             {
@@ -64,7 +64,7 @@ namespace GamesService.Controllers
             /* GETS SPECIFIC MONTH GAMES FOR THE AUTHENTICATED USER, OPTIONAL DIVISIONS FOR FILTERING */
 
             //Gets user Id from token claim
-            string userId = User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
 
             try
             {

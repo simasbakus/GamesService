@@ -33,7 +33,7 @@ namespace GamesService.Controllers
         public async Task<IActionResult> GetCurrentUser()
         {
             // Get currently authorized user id from claim
-            string id = User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            string id = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
 
             try
             {
@@ -61,18 +61,30 @@ namespace GamesService.Controllers
         {
             /* AUTHENTICATES USER BY THE CREDENTIALS */
 
-            string token = await _userService.Authenticate(userCred);
+            AuthenticationResponse tokens = await _userService.Authenticate(userCred);
 
-            if (token == null)
+            if (tokens == null)
                 return Unauthorized();
 
-            return Ok(token);
+            return Ok(tokens);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            AuthenticationResponse tokens = await _userService.RefreshTokens(request.Token, request.RefreshToken);
+
+            if (tokens == null)
+                return Unauthorized();
+
+            return Ok(tokens);
         }
 
         [HttpPost("CurrentUser/ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserPasswords userPasswords)
         {
-            string userId = User.Claims.FirstOrDefault(c => c.Type == "Id").Value;
+            string userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
 
             bool result = await _userService.ChangePassword(userPasswords, userId);
 
