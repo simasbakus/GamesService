@@ -27,6 +27,12 @@ namespace GamesService.Controllers
             return Ok("Ping Test Successful!");
         }
 
+        [HttpGet("GeneralPublicAvailability")]
+        public IActionResult AvailableForGeneralPublic()
+        {
+            return Ok("True");
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost("TestEncryption")]
         public IActionResult Encrypt([FromBody] TextCryptographyModel text)

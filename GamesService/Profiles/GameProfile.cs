@@ -13,6 +13,9 @@ namespace GamesService.Profiles
     {
         public GameProfile()
         {
+            this.CreateMap<Game, GameDtoPublic>()
+                .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => "http://m.hockey.lt/#/rezultatai/rungtynes/" + src.Id.ToString()));
+
             this.CreateMap<Game, GameDto>()
                     .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => "http://m.hockey.lt/#/rezultatai/rungtynes/" + src.Id.ToString()))
                     .ForMember(dest => dest.Position, opt => opt.MapFrom((src, dst, _, context) => 

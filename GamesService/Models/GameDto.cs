@@ -11,6 +11,7 @@ namespace GamesService.Models
         public string UrlLink { get; set; }
         public DateTime Date { get; set; }
         public string Teams { get; set; }
+        public string Result { get; set; }
         public string Division { get; set; }
         public string Position { get; set; }
     }

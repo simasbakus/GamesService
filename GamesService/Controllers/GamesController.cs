@@ -28,8 +28,27 @@ namespace GamesService.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
+        [HttpGet("Public")]
+        public async Task<IActionResult> GetGamesPublic(string Divisions = "")
+        {
+            /* GETS ALL GAMES FOR THE PUBLIC, OPTIONAL DIVISIONS FOR FILTERING */
+            try
+            {
+                List<Game> results = await _gamesRepository.GetAllGamesAsync(null, ConvertStrToList(Divisions));
+
+                List<GameDtoPublic> games = _mapper.Map<List<GameDtoPublic>>(results);
+
+                return Ok(games);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Get(string Divisions = "")
+        public async Task<IActionResult> GetGames(string Divisions = "")
         {
             /* GETS ALL GAMES FOR THE AUTHENTICATED USER, OPTIONAL DIVISIONS FOR FILTERING */
              
@@ -58,8 +77,28 @@ namespace GamesService.Controllers
 
         }
 
+        [AllowAnonymous]
+        [HttpGet("Public/{date}")]
+        public async Task<IActionResult> GetMonthGamesPublic(string date, string Divisions = "")
+        {
+            /* GETS SPECIFIC MONTH GAMES FOR THE PUBLIC, OPTIONAL DIVISIONS FOR FILTERING */
+
+            try
+            {
+                List<Game> results = await _gamesRepository.GetGamesByMonthAsync(null, date, ConvertStrToList(Divisions));
+
+                List<GameDtoPublic> games = _mapper.Map<List<GameDtoPublic>>(results);
+
+                return Ok(games);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Something went wrong");
+            }
+        }
+
         [HttpGet("{date}")]
-        public async Task<IActionResult> GetMonth(string date, string Divisions = "")
+        public async Task<IActionResult> GetMonthGames(string date, string Divisions = "")
         {
             /* GETS SPECIFIC MONTH GAMES FOR THE AUTHENTICATED USER, OPTIONAL DIVISIONS FOR FILTERING */
 
