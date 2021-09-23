@@ -60,10 +60,10 @@ namespace GamesService.Repositories
 
         private static FilterDefinition<Game> SetRefFilter(User user)
         {
-            return Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.LNamePattern)) & (Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.NameInitial)))
-                   | Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression(user.LNamePattern)) & (Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression(user.NameInitial)))
-                   | Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression(user.LNamePattern)) & (Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression(user.NameInitial)))
-                   | Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression(user.LNamePattern)) & (Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression(user.NameInitial)));
+            return Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression($"/{user.LNamePattern}/i")) & (Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("HeadRef1", new BsonRegularExpression(user.NameInitial)))
+                   | Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression($"/{user.LNamePattern}/i")) & (Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("HeadRef2", new BsonRegularExpression(user.NameInitial)))
+                   | Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression($"/{user.LNamePattern}/i")) & (Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("Linesman1", new BsonRegularExpression(user.NameInitial)))
+                   | Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression($"/{user.LNamePattern}/i")) & (Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression(user.Name)) | Builders<Game>.Filter.Regex("Linesman2", new BsonRegularExpression(user.NameInitial)));
         }
 
         private FilterDefinition<Game> CreateDivisionsFilter(List<string> divisions)

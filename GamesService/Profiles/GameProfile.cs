@@ -14,18 +14,27 @@ namespace GamesService.Profiles
         public GameProfile()
         {
             this.CreateMap<Game, GameDtoPublic>()
-                .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => "http://m.hockey.lt/#/rezultatai/rungtynes/" + src.Id.ToString()));
+                .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => $"http://m.hockey.lt/#/rezultatai/rungtynes/{src.Id}"));
 
             this.CreateMap<Game, GameDto>()
-                    .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => "http://m.hockey.lt/#/rezultatai/rungtynes/" + src.Id.ToString()))
-                    .ForMember(dest => dest.Position, opt => opt.MapFrom((src, dst, _, context) => 
-                                                                             (Regex.IsMatch(src.HeadRef1, context.Options.Items["LNamePattern"].ToString()) 
-                                                                              && (Regex.IsMatch(src.HeadRef1, context.Options.Items["Name"].ToString())
-                                                                                  || Regex.IsMatch(src.HeadRef1, context.Options.Items["NameInit"].ToString())))
-                                                                         || (Regex.IsMatch(src.HeadRef2, context.Options.Items["LNamePattern"].ToString())
-                                                                             && (Regex.IsMatch(src.HeadRef2, context.Options.Items["Name"].ToString())
-                                                                                 || Regex.IsMatch(src.HeadRef2, context.Options.Items["NameInit"].ToString())))
-                                                                         ? "Referee" : "Linesman"));
+                    .ForMember(dest => dest.UrlLink, opt => opt.MapFrom(src => $"http://m.hockey.lt/#/rezultatai/rungtynes/{src.Id}"))
+                    .ForMember(dest => dest.Position, opt => opt.MapFrom((src, dst, _, context) => GetPosition(src, context)));
+        }
+
+        private static string GetPosition(Game src, ResolutionContext context)
+        {
+            string LNamePattern = context.Options.Items["LNamePattern"].ToString();
+            string Name = context.Options.Items["Name"].ToString();
+            string NameInit = context.Options.Items["NameInit"].ToString();
+
+            bool isHeadReferee = (Regex.IsMatch(src.HeadRef1, LNamePattern, RegexOptions.IgnoreCase)
+                                  && (Regex.IsMatch(src.HeadRef1, Name, RegexOptions.IgnoreCase)
+                                      || Regex.IsMatch(src.HeadRef1, NameInit, RegexOptions.IgnoreCase)))
+                              || (Regex.IsMatch(src.HeadRef2, LNamePattern, RegexOptions.IgnoreCase)
+                                  && (Regex.IsMatch(src.HeadRef2, Name, RegexOptions.IgnoreCase)
+                                      || Regex.IsMatch(src.HeadRef2, NameInit, RegexOptions.IgnoreCase)));
+
+            return isHeadReferee ? "Referee" : "Linesman";
         }
     }
 }
