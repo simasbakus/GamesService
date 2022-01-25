@@ -1,6 +1,9 @@
-name: .NET Core CI
+name: GamesService CI/CD
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 env:
   AZURE_WEBAPP_NAME: HockeyGamesApi    # set this to your application's name
